@@ -16,11 +16,14 @@ public class Redis {
 
     public static void main (String[] args)
     {
-        // your code goes here
+        
         String input;
         Scanner scanner = new Scanner(System.in);
         System.out.print("redis>");
+
         while ((input = scanner.nextLine()).length()!=0){
+
+        	//partition array for seperating commands, values and other possible options
             String [] partition = input.split(" ");
             String operationName = partition[0];
 
@@ -30,22 +33,28 @@ public class Redis {
                     System.out.println(value);
                     break;
                 }
-                case "SET":
+                case "SET":{
+                	// when only SET is used without any extra options
                     if (partition.length == 3) {
                         SET(partition[1], partition[2]);
                         System.out.println("OK");
-                    } else if (partition.length == 4) {
+                    }
+                    //when SET is requested with commands like XX, NX
+                    else if (partition.length == 4) {
                         boolean isPossible = SET(partition[1], partition[2], partition[3]);
                         if (isPossible) {
                             System.out.println("OK");
                         } else {
                             System.out.println("ERROR");
                         }
-                    } else if (partition.length == 5) {
+                    }
+                    //when SET is requested with commands like PX, EX along with time
+                    else if (partition.length == 5) {
                         long time = Long.parseLong(partition[4]);
                         SET(partition[1], partition[2], partition[3], time);
                     }
                     break;
+                }
                 case "EXPIRE": {
                     String keyName = partition[1];
                     int seconds = Integer.parseInt(partition[2]);
@@ -156,15 +165,15 @@ public class Redis {
         int numberOfOperation =0;
 
         TreeMap<String, String> tempTreeMap;
+        //check if treemap already exists or not
         if (globalTreeMap.containsKey(setName)){
-            tempTreeMap = globalTreeMap.get(setName);/*
-            System.out.print(" treemap exists");*/
+            tempTreeMap = globalTreeMap.get(setName);
         } else{
-            tempTreeMap = new TreeMap<>();/*
-            System.out.print(" treemap does not exists");*/
+            tempTreeMap = new TreeMap<>();
         }
 
         while (i<partition.length){
+        	//It returns number of new addition not total changes
             if (!tempTreeMap.containsKey(partition[i])) {
                 numberOfOperation += 1;
             }
@@ -268,6 +277,7 @@ public class Redis {
         }
     }
 
+    //ZRANGE with WITHSCORES option
     private static void ZRANGE(String setName, int startRange, int endRange, String operation){
         if (globalTreeMap.containsKey(setName)){
             TreeMap<String, String> tempTreeMap = globalTreeMap.get(setName);
