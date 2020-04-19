@@ -12,19 +12,18 @@ For now, only these functions are allowed:
     - NX -- Only set the key if it does not already exist.
     - XX -- Only set the key if it already exist.
         
-        Examples: redis>SET mykey hello
-                  OK
-                  redis>SET mykey hi NX
-                  Error
-                  redis>SET mykey hey XX
-                  OK
-                  redis>SET mykey world EX 10
-                  ok
+            Examples: redis>SET mykey hello
+                      OK
+                      redis>SET mykey hi NX
+                      Error
+                      redis>SET mykey hey XX
+                      OK
+                      redis>SET mykey world EX 10
+                      ok
                   
-                  After 10 seconds
-                  
-                  redis>GET mykey
-                  Nil
+                      After 10 seconds
+                      redis>GET mykey
+                      Nil
 
 2. **GET**: Get the value of key. If the key does not exist the special value nil is returned.<br>
             An error is returned if the value stored at key is not a string, because GET only handles string values.
