@@ -6,7 +6,7 @@ Due to less time, these things are not implemented yet. So, please avoid them wh
 
 
 For now, only these functions are allowed:
-1. **SET**: The SET command supports a set of options that modify its behavior:
+1. **[SET](https://redis.io/commands/set)**: The SET command supports a set of options that modify its behavior:
     - EX seconds -- Set the specified expire time, in seconds.
     - PX milliseconds -- Set the specified expire time, in milliseconds.
     - NX -- Only set the key if it does not already exist.
@@ -25,7 +25,7 @@ For now, only these functions are allowed:
                       redis>GET mykey
                       Nil
 
-2. **GET**: Get the value of key. If the key does not exist the special value nil is returned.<br>
+2. **[GET](https://redis.io/commands/get)**: Get the value of key. If the key does not exist the special value nil is returned.<br>
             An error is returned if the value stored at key is not a string, because GET only handles string values.
             
             Examples: redis>GET mykey
@@ -35,7 +35,7 @@ For now, only these functions are allowed:
                       redis>GET mykey
                       hello
                       
- 3. **EXPIRE**: Set a timeout on key. After the timeout has expired, the key will automatically be deleted. A key with an associated                     timeout is often said to be volatile in Redis terminology.
+ 3. **[EXPIRE](https://redis.io/commands/expire)**: Set a timeout on key. After the timeout has expired, the key will automatically be deleted. A key with an associated                     timeout is often said to be volatile in Redis terminology.
  
                 Examples: redis>SET mykey hello
                           OK
