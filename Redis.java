@@ -168,7 +168,7 @@ public class Redis {
             if (!tempTreeMap.containsKey(partition[i])) {
                 numberOfOperation += 1;
             }
-            tempTreeMap.put(partition[i+1], partition[i]);
+            tempTreeMap.put(partition[i], partition[i+1]);
             i+=2;
         }
         globalTreeMap.put(setName, tempTreeMap);
@@ -194,7 +194,7 @@ public class Redis {
                 while (i < partition.length) {
                     if (tempTreeMap.containsKey(partition[i])) {
                         numberOfNewElementsAdded += 1;
-                        tempTreeMap.put(partition[i+1], partition[i]);
+                        tempTreeMap.put(partition[i], partition[i+1]);
                     }
                     i += 2;
                 }
@@ -206,7 +206,7 @@ public class Redis {
                 while (i < partition.length) {
                     if (!tempTreeMap.containsKey(partition[i])) {
                         numberOfNewElementsAdded += 1;
-                        tempTreeMap.put(partition[i+1], partition[i]);
+                        tempTreeMap.put(partition[i], partition[i+1]);
                     }
                     i += 2;
                 }
@@ -217,7 +217,7 @@ public class Redis {
             case "CH":
                 while (i < partition.length) {
                     numberOfOperations += 1;
-                    tempTreeMap.put(partition[i+1], partition[i]);
+                    tempTreeMap.put(partition[i], partition[i+1]);
                     i += 2;
                 }
                 globalTreeMap.put(setName, tempTreeMap);
@@ -252,7 +252,7 @@ public class Redis {
                 	startRange = (startRange+length);
                 }
                 if (endRange<0) {
-                	endRange = (endRange+length);
+                	endRange = (endRange+length)+1;
                 }
 
                 String[] keys = tempTreeMap.keySet().toArray(new String[0]);
@@ -277,13 +277,13 @@ public class Redis {
                 	startRange = (startRange+length);
                 }
                 if (endRange<0) {
-                	endRange = (endRange+length);
+                	endRange = (endRange+length)+1;
                 }
 
                 String[] keys = tempTreeMap.keySet().toArray(new String[0]);
                 for (int i = startRange; i<endRange && i<keys.length; i++){
-                	System.out.println(keys[i]);
                 	System.out.println(tempTreeMap.get(keys[i]));
+                	System.out.println(keys[i]);
                 }
             } else{
             	System.out.println("Nil");
