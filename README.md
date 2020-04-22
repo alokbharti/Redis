@@ -1,4 +1,9 @@
 # Implementation of Redis
+version-> 1.0.1
+
+Latest changes in new update:
+1. All values should be inside double-quotes. Ex- SET myKey "hello world!"
+2. Multiple words are allowed as values in all opertions
 
 ### Instructions to run:
 1. Make sure your system has java installed in it
@@ -6,10 +11,6 @@
 3. Open terminal and go to your directory where you've downloaded the file
 4. Type javac Redis.java
 5. java Redis
-
-Due to less time, these things are not implemented yet. So, please avoid them while executing these commands:
-1. Don't use quotes ("") for values. Write the values without them
-2. For now, only single words are allowed. Ex- `SET mykey hello world` will not execute while `SET mykey hello` will do
 
 
 For now, only these functions are allowed:
@@ -105,6 +106,7 @@ If member does not exist in the sorted set or key does not exist, Bulk string re
   P.S.: USE QUIT to exit from the loop :)
   
   ## Future scope:
-  1. Support multi words for values and values should be inside `''`.
-  2. Implement Socket programming for providing server-client nature
-  3. Code improvements
+  - [x] Support multi words for values and values should be inside `""`  ----DONE
+  - [ ] Implement Socket programming for providing server-client nature
+  - [ ] Code improvements
+  
