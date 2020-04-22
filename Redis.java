@@ -34,25 +34,32 @@ public class Redis {
                     break;
                 }
                 case "SET":{
+                    //get value from double quotes
+                	String [] partition2 = input.split("\"");
+                	String value = partition2[1];
+                    if (partition2.length == 3) {
+                    	//look for the extra options...
+                    	String [] extraOps = partition2[2].split(" ");
+                    	//when SET is requested with commands like XX, NX
+                    	if (extraOps.length == 2) {
+                        	boolean isPossible = SET(partition[1], value, extraOps[1]);
+                        	if (isPossible) {
+                            	System.out.println("OK");
+                        	} else {
+                            	System.out.println("ERROR");
+                        	}
+                    	}
+                    	//when SET is requested with commands like PX, EX along with time
+                    	else if (extraOps.length == 3) {
+                        	long time = Long.parseLong(extraOps[2]);
+                        	SET(partition[1], value, extraOps[1], time);
+                    	}
+                	}
+                	else{
                 	// when only SET is used without any extra options
-                    if (partition.length == 3) {
-                        SET(partition[1], partition[2]);
-                        System.out.println("OK");
-                    }
-                    //when SET is requested with commands like XX, NX
-                    else if (partition.length == 4) {
-                        boolean isPossible = SET(partition[1], partition[2], partition[3]);
-                        if (isPossible) {
-                            System.out.println("OK");
-                        } else {
-                            System.out.println("ERROR");
-                        }
-                    }
-                    //when SET is requested with commands like PX, EX along with time
-                    else if (partition.length == 5) {
-                        long time = Long.parseLong(partition[4]);
-                        SET(partition[1], partition[2], partition[3], time);
-                    }
+                       	SET(partition[1], value);
+                       	System.out.println("OK");
+                	}
                     break;
                 }
                 case "EXPIRE": {
@@ -64,22 +71,27 @@ public class Redis {
                 }
                 case "ZADD": {
                     String setName = partition[1];
-                    int length = partition.length;
+					int length = partition.length;
+					//extract only key-value from input
+                    String keyValuePairs = String.join(" ", Arrays.copyOfRange(partition, 2, length));
+                    
                     if (partition[length - 1].equals("XX") || partition[length - 1].equals("NX") || partition[length - 1].equals("CH")) {
-                        int returnValue = ZADD(setName, Arrays.copyOfRange(partition, 2, length - 1), partition[length - 1]);
+                        int returnValue = ZADD(setName, keyValuePairs, partition[length - 1]);
                         System.out.println(returnValue);
                     } else {
-                        int returnValue = ZADD(setName, Arrays.copyOfRange(partition, 2, length));
+                        int returnValue = ZADD(setName, keyValuePairs);
                         System.out.println(returnValue);
                     }
                     break;
                 }
                 case "ZRANK": {
-                    int value = ZRANK(partition[1], partition[2]);
-                    if (value == -1) {
+                	String [] partition2 = input.split("\"");
+                	String value = partition2[1];
+                    int rank = ZRANK(partition[1], value);
+                    if (rank == -1) {
                         System.out.println("Nil");
                     } else {
-                        System.out.println(value);
+                        System.out.println(rank);
                     }
                     break;
                 }
@@ -144,6 +156,7 @@ public class Redis {
         }
 
         globalHashtable.put(key, value);
+        System.out.println("OK");
         final long finalTime = time;
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -159,7 +172,7 @@ public class Redis {
 
     }
 
-    private static int ZADD(String setName, String [] partition){
+    private static int ZADD(String setName, String keyValuePair){
 
         int i=0;
         int numberOfOperation =0;
@@ -172,12 +185,17 @@ public class Redis {
             tempTreeMap = new TreeMap<>();
         }
 
-        while (i<partition.length){
+      	String [] key_value_pairs = keyValuePair.split("\"");
+      	int keyValuePairLength = key_value_pairs.length;
+        while (i < keyValuePairLength){
         	//It returns number of new addition not total changes
-            if (!tempTreeMap.containsKey(partition[i])) {
+
+        	//remove spaces from keys which can come after partitioning
+        	String tempKey = key_value_pairs[i].replaceAll("\\s","");
+            if (!tempTreeMap.containsKey(tempKey)) {
                 numberOfOperation += 1;
             }
-            tempTreeMap.put(partition[i], partition[i+1]);
+            tempTreeMap.put(tempKey, key_value_pairs[i+1]);
             i+=2;
         }
         globalTreeMap.put(setName, tempTreeMap);
@@ -185,7 +203,7 @@ public class Redis {
         return numberOfOperation;
     }
 
-    private static int ZADD(String setName, String [] partition, String operations){
+    private static int ZADD(String setName, String keyValuePair, String operations){
         int i=0;
         int numberOfNewElementsAdded =0;
         int numberOfOperations=0;
@@ -197,13 +215,17 @@ public class Redis {
             tempTreeMap = new TreeMap<>();
         }
 
+      	String [] key_value_pairs = keyValuePair.split("\"");
+      	int keyValuePairLength = key_value_pairs.length;
+
         switch (operations) {
             //Only update elements that already exist. Never add elements.
             case "XX":
-                while (i < partition.length) {
-                    if (tempTreeMap.containsKey(partition[i])) {
+                while (i < keyValuePairLength) {
+        			String tempKey = key_value_pairs[i].replaceAll("\\s","");
+                    if (tempTreeMap.containsKey(tempKey)) {
                         numberOfNewElementsAdded += 1;
-                        tempTreeMap.put(partition[i], partition[i+1]);
+                        tempTreeMap.put(tempKey, key_value_pairs[i+1]);
                     }
                     i += 2;
                 }
@@ -212,10 +234,11 @@ public class Redis {
 
             //Don't update already existing elements. Always add new elements.
             case "NX":
-                while (i < partition.length) {
-                    if (!tempTreeMap.containsKey(partition[i])) {
+                while (i < keyValuePairLength) {
+        			String tempKey = key_value_pairs[i].replaceAll("\\s","");
+                    if (!tempTreeMap.containsKey(tempKey)) {
                         numberOfNewElementsAdded += 1;
-                        tempTreeMap.put(partition[i], partition[i+1]);
+                        tempTreeMap.put(tempKey, key_value_pairs[i+1]);
                     }
                     i += 2;
                 }
@@ -224,9 +247,10 @@ public class Redis {
 
             //Don't update already existing elements. Always add new elements.
             case "CH":
-                while (i < partition.length) {
+                while (i < keyValuePairLength) {
+        			String tempKey = key_value_pairs[i].replaceAll("\\s","");
                     numberOfOperations += 1;
-                    tempTreeMap.put(partition[i], partition[i+1]);
+                    tempTreeMap.put(tempKey, key_value_pairs[i+1]);
                     i += 2;
                 }
                 globalTreeMap.put(setName, tempTreeMap);
