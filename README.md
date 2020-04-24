@@ -20,13 +20,13 @@ For now, only these functions are allowed:
     - NX -- Only set the key if it does not already exist.
     - XX -- Only set the key if it already exist.
         
-            Examples: redis>SET mykey hello
+            Examples: redis>SET mykey "hello"
                       OK
-                      redis>SET mykey hi NX
+                      redis>SET mykey "hi" NX
                       Error
-                      redis>SET mykey hey XX
+                      redis>SET mykey "hey" XX
                       OK
-                      redis>SET mykey world EX 10
+                      redis>SET mykey "world" EX 10
                       ok
                   
                       After 10 seconds
@@ -38,14 +38,14 @@ For now, only these functions are allowed:
             
             Examples: redis>GET mykey
                       Nil
-                      redis>SET mykey hello
+                      redis>SET mykey "hello"
                       OK
                       redis>GET mykey
                       hello
                       
  3. **[EXPIRE](https://redis.io/commands/expire)**: Set a timeout on key. After the timeout has expired, the key will automatically be deleted. A key with an associated                     timeout is often said to be volatile in Redis terminology.
  
-                Examples: redis>SET mykey hello
+                Examples: redis>SET mykey "hello"
                           OK
                           redis>EXPIRE mykey 5
                           1
@@ -60,12 +60,12 @@ For now, only these functions are allowed:
      - NX: Don't update already existing elements. Always add new elements.
      - CH: Modify the return value from the number of new elements added, to the total number of elements changed (CH is an abbreviation        of -changed). Changed elements are new elements added and elements already existing for which the score was updated. So elements        specified in the command line having the same score as they had in the past are not counted. Note: normally the return value of          ZADD only counts the number of new elements added. 
      
-       Examples: redis>ZADD myzset 1 a
+       Examples: redis>ZADD myzset 1 "a"
                  1
                  redis>ZRANGE myzset 0 1 WITHSCORES
                  a
                  1
-                 redis>ZADD myzset 3 c 2 b
+                 redis>ZADD myzset 3 "c" 2 "b"
                  2
                  redis>ZRANGE myzset 0 -1 WITHSCORES
                  a
@@ -78,18 +78,18 @@ For now, only these functions are allowed:
 5. **[ZRANK](https://redis.io/commands/zrank)**: If member exists in the sorted set, Integer reply: the rank of member.
 If member does not exist in the sorted set or key does not exist, Bulk string reply: nil. (ranks start from 0)
 
-            Examples: redis>ZADD myzset 1 a 3 c 2 b
+            Examples: redis>ZADD myzset 1 "a" 3 "c" 2 "b"
                       3
-                      redis>ZRANK myzset a
+                      redis>ZRANK myzset "a"
                       0
-                      redis>ZRANK myzset b
+                      redis>ZRANK myzset "b"
                       2
-                      redis>ZRANK myzset c
+                      redis>ZRANK myzset "c"
                       3
                       
 6. **[ZRANGE](https://redis.io/commands/zrange)**: Returns list of elements in the specified range (optionally with their scores, in case the WITHSCORES option is given).
 
-             Examples: redis>ZADD myzset 1 a 3 c 2 b
+             Examples: redis>ZADD myzset 1 "a" 3 "c" 2 "b"
                        3
                        redis>ZRANGE myzset 0 3
                        a
@@ -107,6 +107,6 @@ If member does not exist in the sorted set or key does not exist, Bulk string re
   
   ## Future scope:
   - [x] Support multi words for values and values should be inside `""`  ----DONE
-  - [ ] Implement Socket programming for providing server-client nature
+  - [ ] Implement Socket programming for providing server-client nature  ----check redis/extraFeatures branch
   - [ ] Code improvements
   
