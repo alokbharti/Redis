@@ -60,20 +60,20 @@ For now, only these functions are allowed:
      - NX: Don't update already existing elements. Always add new elements.
      - CH: Modify the return value from the number of new elements added, to the total number of elements changed (CH is an abbreviation        of -changed). Changed elements are new elements added and elements already existing for which the score was updated. So elements        specified in the command line having the same score as they had in the past are not counted. Note: normally the return value of          ZADD only counts the number of new elements added. 
      
-       Examples: redis>ZADD myzset 1 "a"
-                 1
-                 redis>ZRANGE myzset 0 1 WITHSCORES
-                 a
-                 1
-                 redis>ZADD myzset 3 "c" 2 "b"
-                 2
-                 redis>ZRANGE myzset 0 -1 WITHSCORES
-                 a
-                 1
-                 b 
-                 2
-                 c
-                 3
+            Examples: redis>ZADD myzset 1 "a"
+                      1
+                      redis>ZRANGE myzset 0 1 WITHSCORES
+                      a
+                      1
+                      redis>ZADD myzset 3 "c" 2 "b"
+                      2
+                      redis>ZRANGE myzset 0 -1 WITHSCORES
+                      a
+                      1
+                      b 
+                      2
+                      c 
+                      3
                  
 5. **[ZRANK](https://redis.io/commands/zrank)**: If member exists in the sorted set, Integer reply: the rank of member.
 If member does not exist in the sorted set or key does not exist, Bulk string reply: nil. (ranks start from 0)
